@@ -1,7 +1,13 @@
 from django.db import models
 from django.conf import settings
-
+from django.contrib.auth.models import AbstractUser
+from django.forms import ModelForm
+from django.contrib.auth.forms import UserCreationForm
 # Create your models here.
+
+#class User(AbstractUser):
+#    username = models.EmailField(primary_key=True)
+
 class Event(models.Model):
     title = models.CharField(max_length=50)
     description = models.CharField(max_length=500)

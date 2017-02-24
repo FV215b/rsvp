@@ -70,6 +70,8 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'rsvp.wsgi.application'
 
+#Auth
+#AUTH_USER_MODEL = 'rsvpapp.User'
 
 # Database
 # https://docs.djangoproject.com/en/1.10/ref/settings/#databases
