@@ -14,5 +14,21 @@
 {% block content %}
 {% if user.is_authenticated %}
   <a href="{% url 'create_event' new_eid=next_event_id %}">Create New Event!</a>
+
+  <ul>
+    {% for event in events %}
+      {% if event.permission__permission == 0 %}
+        <li>{{ event.title }} - Owner - {{event.permission__permission}}</li>
+      {% elif event.permission__permission == 1 %}
+        <li>{{ event.title }} - Vendor</li>
+      {% elif event.permission__permission == 2 %}
+        <li>{{ event.title }} - Guest</li>
+      {% else %}
+        <li>{{ event.title }} - Unknown - {{event.permission__permission}}</li>
+    {% endif %}
+    {% empty %}
+    <li>Currently, you haven't attended any events.</li>
+    {% endfor %}
+  </ul>
 {% endif %}
 {% endblock %}

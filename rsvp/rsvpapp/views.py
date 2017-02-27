@@ -35,7 +35,8 @@ def homepage(request, template_name):
     next_event_id = (request.user.username + "_" + str(request.user.event_set.count() + 1))\
     .replace("@", "_")\
     .replace(".", "_");
-    context = {'next_event_id': next_event_id}
+    events = request.user.event_set.all().extra(order_by = ['-permission__permission__gt'])
+    context = {'next_event_id': next_event_id, 'events': events}
     return render(request, template_name, context)
 
 def create_event(request, template_name, new_eid):
