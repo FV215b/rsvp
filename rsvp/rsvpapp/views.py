@@ -72,6 +72,7 @@ def add_question(request, template_name, new_eid, new_qid):
         if question_form.is_valid() and choice_formset.is_valid():
             question_form.save()
             choice_formset.save()
+            event.save()
             event.question_set.add(question)
     else:
         question_form = QuestionForm(instance=question,\
