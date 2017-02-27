@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>Create Event</h1>
+{% endblock %}
+
+{% block content %}
+    {% if user.is_authenticated %}
+    <a>{{new_eid}}</a>
+        <form method="post" action="{% url 'create_event' new_eid=new_eid %}">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Save</button>
+        </form>
+        <a href="{% url 'add_question' new_qid=new_qid new_eid=new_eid%}">Add a question</a>
+        <a href="{% url 'homepage' %}">Back</a>
+    {% endif %}
+{% endblock %}

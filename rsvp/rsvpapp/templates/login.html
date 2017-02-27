@@ -6,7 +6,10 @@
 <h1>Django Simple Login</h1>
   {% if user.is_authenticated %}
     Hi {{ user.username }}!
-    <a href="{% url 'logout' %}">logout</a>
+    <script language="javascript" type="text/javascript">
+      window.location.href='../homepage';
+      setTimeout("javascript:location.href='../homepage'", 5000); 
+    </script>
   {% else %}
     <h2>Login</h2>
     <form method="post" action="{% url 'login' %}">

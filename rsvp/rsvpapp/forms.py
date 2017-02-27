@@ -1,6 +1,10 @@
 from django.contrib.auth.forms import UserCreationForm
 from django import forms
+from django.forms import ModelForm, modelformset_factory
 from django.contrib.auth.models import User
+from rsvpapp.models import Event
+from rsvpapp.models import Question
+from rsvpapp.models import Choice
 
 class RegisterForm(UserCreationForm):
     first_name = forms.CharField()
@@ -20,3 +24,19 @@ class RegisterForm(UserCreationForm):
         if commit:
             user.save()
         return user
+
+class EventForm(ModelForm):
+    class Meta:
+        model = Event
+        fields = ['title', 'description', 'start_time', 'address']
+        widgets = {
+            'start_time': forms.DateTimeInput()
+        }
+
+class QuestionForm(ModelForm):
+    class Meta:
+        model = Question
+        fields = ['question', 'visibility']
+        widgets = {
+            'visibility': forms.CheckboxInput()
+        }

@@ -10,4 +10,6 @@ urlpatterns = [
     url(r'^logout/$', auth_views.logout, {'next_page': '/rsvpapp/login'}, name='logout'),
     url(r'^register', views.register, {'template_name': 'register.html'}, name='register'),
     url(r'^homepage', views.homepage, {'template_name': 'homepage.html'}, name='homepage'),
+    url(r'^create_event/(?P<new_eid>\w+)', views.create_event, {'template_name': 'create_event.html'}, name='create_event'),
+    url(r'^add_question/(?P<new_eid>\w+)/(?P<new_qid>\w+)', views.add_question, {'template_name': 'add_question.html'}, name='add_question'),
 ]

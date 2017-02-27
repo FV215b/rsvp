@@ -9,9 +9,10 @@ from django.contrib.auth.forms import UserCreationForm
 #    username = models.EmailField(primary_key=True)
 
 class Event(models.Model):
+    eid = models.CharField(max_length=50, primary_key=True)
     title = models.CharField(max_length=50)
     description = models.CharField(max_length=500)
-    start_time = models.DateTimeField('event start time')
+    start_time = models.DateTimeField('event start time', null = True, blank=True)
     address = models.CharField(max_length=100)
     members = models.ManyToManyField(settings.AUTH_USER_MODEL, through='Permission')
 
@@ -22,7 +23,8 @@ class Event(models.Model):
         return self.question_set.all()
 
 class Question(models.Model):
-    event = models.ForeignKey(Event)
+    qid = models.CharField(max_length=50, primary_key=True)
+    event = models.ForeignKey(Event, on_delete=models.CASCADE, null = True)
     question = models.CharField(max_length=50)
     visibility = models.BooleanField(default=True)
     changeable = models.BooleanField(default=True)
@@ -34,7 +36,7 @@ class Question(models.Model):
         return self.choice_set.all()
 
 class Choice(models.Model):
-    question = models.ForeignKey(Question)
+    question = models.ForeignKey(Question, on_delete=models.CASCADE)
     choice = models.CharField(max_length=20)
     user = models.ManyToManyField(settings.AUTH_USER_MODEL)
 
