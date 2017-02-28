@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{{event_data.event.title}}</h1>
+  <div>description: {{event_data.event.description}}</div>
+  <div>Address: {{event_data.event.address}}</div>
+  <div>Start time: {{event_data.event.start_time}}</div>
+{% endblock %}
+
+{% block content %}
+    {% if user.is_authenticated %}
+        {% for question in event_data.questions %}
+            <div>{{question.question}}</div>
+            {% for choice in question.choice %}
+              <input type="checkbox">{{choice.choice}}<br>
+            {% endfor %}
+        {% endfor %}
+        <a href="{% url 'homepage' %}">Back</a>
+        <a href="{% url 'create_event' new_eid=event_data.event.eid %}">Edit Event</a>
+    {% endif %}
+{% endblock %}

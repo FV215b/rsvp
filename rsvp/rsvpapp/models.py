@@ -24,7 +24,7 @@ class Event(models.Model):
 
 class Question(models.Model):
     qid = models.CharField(max_length=50, primary_key=True)
-    event = models.ForeignKey(Event, on_delete=models.CASCADE, null = True)
+    event = models.ForeignKey(Event, on_delete=models.CASCADE, null = True, related_name="question")
     question = models.CharField(max_length=50)
     visibility = models.BooleanField(default=True)
     changeable = models.BooleanField(default=True)
@@ -36,7 +36,7 @@ class Question(models.Model):
         return self.choice_set.all()
 
 class Choice(models.Model):
-    question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name="choice")
     choice = models.CharField(max_length=20)
     user = models.ManyToManyField(settings.AUTH_USER_MODEL)
 

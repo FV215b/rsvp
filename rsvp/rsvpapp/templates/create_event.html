@@ -12,6 +12,13 @@
             {{ form.as_p }}
             <button type="submit">Save</button>
         </form>
+
+        {% for question in questions %}
+            <a>{{question.question}}</a>
+            {% for choice in question.choice %}
+              <input type="checkbox">{{choice.choice}}<br>
+            {% endfor %}
+        {% endfor %}
         <a href="{% url 'add_question' new_qid=new_qid new_eid=new_eid%}">Add a question</a>
         <a href="{% url 'homepage' %}">Back</a>
     {% endif %}

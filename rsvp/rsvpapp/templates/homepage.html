@@ -16,15 +16,15 @@
   <a href="{% url 'create_event' new_eid=next_event_id %}">Create New Event!</a>
 
   <ul>
-    {% for event in events %}
-      {% if event.permission__permission == 0 %}
-        <li>{{ event.title }} - Owner - {{event.permission__permission}}</li>
-      {% elif event.permission__permission == 1 %}
-        <li>{{ event.title }} - Vendor</li>
-      {% elif event.permission__permission == 2 %}
-        <li>{{ event.title }} - Guest</li>
+    {% for permission in permissions %}
+      {% if permission.permission == 0 %}
+        <li><a href="{% url 'view_event' eid=permission.event.eid permission=permission.permission%}">{{ permission.event.title }} - Owner</a></li>
+      {% elif permission.permission == 1 %}
+        <li><a href="{% url 'view_event' eid=permission.event.eid permission=permission.permission%}">{{ permission.event.title }} - Vendor</a></li>
+      {% elif permission.permission == 2 %}
+        <li><a href="{% url 'view_event' eid=permission.event.eid permission=permission.permission%}">{{ permission.event.title }} - Guest</a></li>
       {% else %}
-        <li>{{ event.title }} - Unknown - {{event.permission__permission}}</li>
+        <li><a href="{% url 'view_event' eid=permission.event.eid permission=permission.permission%}">{{ permission.event.title }} - Unknown</a></li>
     {% endif %}
     {% empty %}
     <li>Currently, you haven't attended any events.</li>

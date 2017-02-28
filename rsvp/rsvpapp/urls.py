@@ -12,4 +12,5 @@ urlpatterns = [
     url(r'^homepage', views.homepage, {'template_name': 'homepage.html'}, name='homepage'),
     url(r'^create_event/(?P<new_eid>\w+)', views.create_event, {'template_name': 'create_event.html'}, name='create_event'),
     url(r'^add_question/(?P<new_eid>\w+)/(?P<new_qid>\w+)', views.add_question, {'template_name': 'add_question.html'}, name='add_question'),
+    url(r'^view_event/(?P<eid>\w+)/(?P<permission>\d)', views.view_event, name='view_event')
 ]
