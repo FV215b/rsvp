@@ -40,3 +40,6 @@ class QuestionForm(ModelForm):
         widgets = {
             'visibility': forms.CheckboxInput()
         }
+
+class AddUserForm(forms.Form):
+    email = forms.EmailField(required=False)
