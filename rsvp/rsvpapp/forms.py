@@ -36,10 +36,12 @@ class EventForm(ModelForm):
 class QuestionForm(ModelForm):
     class Meta:
         model = Question
-        fields = ['question', 'visibility']
+        fields = ['question', 'visibility', 'q_type']
         widgets = {
             'visibility': forms.CheckboxInput()
         }
-
+        labels = {
+            'q_type': "Question Type"
+        }
 class AddUserForm(forms.Form):
     email = forms.EmailField(required=False)

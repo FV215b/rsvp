@@ -25,8 +25,16 @@ class Event(models.Model):
 
 #q_type: 0-multiple choice, 1-single choice, 2-text answer
 class Question(models.Model):
+    MULTICHOICE = 0
+    SINGLECHOICE = 1
+    TEXT = 2
+    QUESTION_TYPE_CHOICES = (
+        (MULTICHOICE, "multiple choice"),
+        (SINGLECHOICE, "single choice"),
+        (TEXT, "text question"),
+    )
     qid = models.CharField(max_length=50, primary_key=True)
-    q_type = models.DecimalField(max_digits=1, decimal_places=0, default=0)
+    q_type = models.DecimalField(max_digits=1, decimal_places=0, default=MULTICHOICE, choices=QUESTION_TYPE_CHOICES)
     event = models.ForeignKey(Event, on_delete=models.CASCADE, null = True, related_name="question")
     question = models.CharField(max_length=50)
     visibility = models.BooleanField(default=True)
