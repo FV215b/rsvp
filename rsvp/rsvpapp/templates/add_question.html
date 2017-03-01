@@ -5,11 +5,21 @@
   <h1>Add Question</h1>
   <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
   <script language="javascript" type="text/javascript">
-  function clicked(){
-    num = parseInt(document.getElementById("id_choices-TOTAL_FORMS").value)
-    num += 1
-    document.getElementById("id_choices-TOTAL_FORMS").value = num
-    alert(document.getElementById("id_choices-TOTAL_FORMS").value)
+  function cloneMore(selector, type) {
+      var newElement = $(selector).clone(true);
+      var total = $('#id_' + type + '-TOTAL_FORMS').val();
+      newElement.find(':input').each(function() {
+          var name = $(this).attr('name').replace('-' + (total-1) + '-','-' + total + '-');
+          var id = 'id_' + name;
+          $(this).attr({'name': name, 'id': id}).val('').removeAttr('checked');
+      });
+      newElement.find('label').each(function() {
+          var newFor = $(this).attr('for').replace('-' + (total-1) + '-','-' + total + '-');
+          $(this).attr('for', newFor);
+      });
+      total++;
+      $('#id_' + type + '-TOTAL_FORMS').val(total);
+      $(selector).after(newElement);
   }
   </script>
 {% endblock %}
@@ -19,10 +29,22 @@
         <form method="post" action="{% url 'add_question' new_qid=new_qid new_eid=new_eid%}">
             {% csrf_token %}
             {{ question_form.as_p }}
-            {{choice_formset.as_p}}
-            <button onclick="clicked()">Add a choice</button>
+            {{choice_formset.management_form}}
+            {% for form in choice_formset.forms %}
+              <div class='table'>
+                <table class='no_error'>
+                  {{ form.as_table }}
+                </table>
+              </div>
+            {% endfor %}
+            <input type="button" value="Add More" id="add_more">
             <button type="submit">Save</button>
         </form>
         <a href="{% url 'create_event' new_eid=new_eid%}">Back</a>
     {% endif %}
+    <script language="javascript" type="text/javascript">
+        $('#add_more').click(function() {
+            cloneMore('div.table:last', 'choices');
+        });
+    </script>
 {% endblock %}

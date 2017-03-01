@@ -13,7 +13,7 @@ from rsvpapp.models import Event, Permission, Question, Choice
 from django.contrib.auth.decorators import login_required
 
 # Create your views here.
-ChoiceFormSet = inlineformset_factory(Question, Choice, fields=('choice',), extra=0)
+ChoiceFormSet = inlineformset_factory(Question, Choice, fields=('choice',), extra=1)
 User = get_user_model()
 
 def register(request, template_name):
@@ -45,6 +45,8 @@ def create_event(request, template_name, new_eid):
     event = get_object(Event, new_eid)
     if event is None:
         event = Event.objects.create(pk = new_eid)
+        event.save()
+    new_qid = new_eid + "_" + str(event.question.count() + 1);
     questions = event.question.all()
     question_list = get_question_list(questions)
     members = event.members.all()
@@ -63,7 +65,6 @@ def create_event(request, template_name, new_eid):
             permission.save()
     else:
         form = EventForm(instance=event, data = model_to_dict(event))
-        new_qid = new_eid + "_" + str(event.question.count() + 1);
 
     context = {'form': form, \
     'owner_form': owner_form, \
@@ -87,11 +88,6 @@ def add_question(request, template_name, new_eid, new_qid):
         question_form = QuestionForm(data=request.POST, instance=question)
         choice_formset = ChoiceFormSet(data=request.POST, instance=question, prefix='choices')
         if question_form.is_valid() and choice_formset.is_valid():
-            if event is None:
-                Event.objects.create(pk = new_eid)
-                event.save()
-                permission = Permission(user=request.user, event=event, permission=0)
-                permission.save()
             question_form.save()
             choice_formset.save()
             event.question.add(question)
@@ -104,7 +100,6 @@ def add_question(request, template_name, new_eid, new_qid):
 @login_required
 def view_event(request, eid, permission):
     context = {'eid': eid, 'permission': permission}
-    print(type(permission))
     if permission == '0':
         return view_event_as_owner(request, 'view_event_as_owner.html', context)
     elif permission == '1':

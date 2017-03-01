@@ -28,7 +28,7 @@ class RegisterForm(UserCreationForm):
 class EventForm(ModelForm):
     class Meta:
         model = Event
-        fields = ['title', 'description', 'start_time', 'address']
+        fields = ['title', 'description', 'start_time', 'address', 'plus_one_allowed']
         widgets = {
             'start_time': forms.DateTimeInput()
         }
