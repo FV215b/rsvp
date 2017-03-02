@@ -1,0 +1,7 @@
+<p>
+  {% for user in users %}
+  {{user.username}}  ({{user.first_name}} {{user.last_name}}),
+  {% empty %}
+  {{empty_text}}
+  {% endfor %}
+</p>

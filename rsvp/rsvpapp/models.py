@@ -78,3 +78,7 @@ class Permission(models.Model):
 
     def __str__(self) :
         return '%s %s' % (self.user.username, self.event)
+
+class PKManagement(models.Model):
+    model_name = models.CharField(max_length=20)
+    max_number = models.DecimalField(max_digits=10, decimal_places=0, default=0)

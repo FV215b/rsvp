@@ -1,0 +1,23 @@
+<div class="panel panel-default">
+  <div class="panel-heading">Questions</div>
+    <div class="panel-body">
+      <div class="panel-group">
+        {% for question in questions %}
+        <div class="panel panel-default">
+          <div class="panel-heading">{{question.question}}
+          </div>
+            <div class="panel-body">
+              <div class="list-group">
+              {% for choice in question.choice %}
+                <a href="{% url 'choice_detail' cid=choice.id eid=eid permission=permission%}" class="list-group-item">{{choice.choice}}<span class="badge">{{choice.number}}</span></a>
+              {% endfor %}
+              </div>
+            </div>
+        </div>
+        {% empty %}
+        <p>No questions.</p>
+        {% endfor %}
+      </div>
+  </div>
+</div>
+</div>

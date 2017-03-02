@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block header%}
+<h1>Choice Details</h1>
+{% endblock %}
+
+{% block content %}
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <p>Question: {{question.question}}</p>
+    <p>Choice: {{choice.choice}}</p>
+  </div>
+    <div class="panel-body">
+  <div class="list-group">
+    {% for user in chosen_users %}
+    <a href="#" class="list-group-item">{{user.username}} ({{user.first_name}} {{user.last_name}})</a>
+    {% empty %}
+    <p>No user chose this.</p>
+    {% endfor %}
+  </div>
+  <a href="{% url 'view_event' eid=eid permission=permission%}" class="btn btn-primary" role="button" >Back</a>
+</div>
+</div>
+{% endblock %}

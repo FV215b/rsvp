@@ -5,61 +5,59 @@
 {% endblock %}
 
 {% block content %}
-    {% if user.is_authenticated %}
-    <a>{{new_eid}}</a>
-        <form method="post" action="{% url 'create_event' new_eid=new_eid %}">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit">Save</button>
-        </form>
-
-        <div>
-        <h5>Added Owners:</h5>
-        <ul>
-        {% for owner in owners %}
-          <p>{{owner.username}}  ({{owner.first_name}} {{owner.last_name}})</p>
-        {% endfor %}
+{% if user.is_authenticated %}
+<div class="panel-group">
+  <div class="panel panel-default">
+    <div class="panel-heading">Event Info</div>
+    <div class="panel-body">
+      <form method="post" action="{% url 'create_event' new_eid=new_eid %}">
+        {% csrf_token %}
+        <ul class="list-group">
+          {{ form.as_ul }}
         </ul>
-        <form method="post" action="{% url 'add_owner' eid=new_eid %}">
-          {% csrf_token %}
-          {{owner_form.as_p}}
-          <input type="hidden" name="permission" value=0>
-          <button type="submit">Add Owner</button>
-        </form>
+        <button type="submit" class="btn btn-primary" >Save</button>
+      </form>
+    </div>
+  </div>
+  <div class="panel panel-default">
+    <div class="panel-heading">Owner</div>
+    <div class="panel-body">
+      {% include "userlist.html" with users=owners eid=new_eid permission=0 empty_text="No Owner Added"%}
+      <form method="post" action="{% url 'add_owner' eid=new_eid permission=0 %}">
+        {% csrf_token %}
+        {{owner_form.as_p}}
+        <input type="hidden" name="permission" value=0>
+        <button type="submit" class="btn btn-primary">Add Owner</button>
+      </form>
+    </div>
+  </div>
+  <div class="panel panel-default">
+    <div class="panel-heading">Vendor</div>
+    <div class="panel-body">
+      {% include "userlist.html" with users=vendors eid=new_eid permission=1 empty_text="No Vendor Added"%}
+      <form method="post" action="{% url 'add_vendor' eid=new_eid permission=1 %}">
+        {% csrf_token %}
+        {{vendor_form.as_p}}
+        <input type="hidden" name="permission" value=1>
+        <button type="submit" class="btn btn-primary">Add Vendor</button>
+      </form>
+    </div>
+  </div>
+  <div class="panel panel-default">
+    <div class="panel-heading">Guest</div>
+    <div class="panel-body">
+      {% include "userlist.html" with users=guests eid=new_eid permission=2 empty_text="No Guest Added"%}
+      <form method="post" action="{% url 'add_guest' eid=new_eid permission=2%}">
+        {% csrf_token %}
+        {{guest_form.as_p}}
+        <input type="hidden" name="permission" value=2>
+        <button type="submit" class="btn btn-primary">Add Guest</button>
+      </form>
+    </div>
+  </div>
 
-        <h5>Added Vendors:</h5>
-        <ul>
-        {% for vendor in vendors %}
-          <p>{{vendor.username}}  ({{vendor.first_name}} {{vendor.last_name}})</p>
-        {% endfor %}
-        </ul>
-        <form method="post" action="{% url 'add_vendor' eid=new_eid %}">
-          {% csrf_token %}
-          {{vendor_form.as_p}}
-          <input type="hidden" name="permission" value=1>
-          <button type="submit">Add Vendor</button>
-        </form>
-
-        <h5>Added Guests:</h5>
-        <ul>
-        {% for guest in guests %}
-          <p>{{guest.username}}  ({{guest.first_name}} {{guest.last_name}})</p>
-        {% endfor %}
-        </ul>
-        <form method="post" action="{% url 'add_guest' eid=new_eid %}">
-          {% csrf_token %}
-          {{guest_form.as_p}}
-          <input type="hidden" name="permission" value=2>
-          <button type="submit">Add Guest</button>
-        </form>
-      </div>
-        {% for question in questions %}
-            <h5>{{question.question.question}}><a href="{% url 'add_question' new_qid=question.question.qid new_eid=new_eid%}">Edit Question</a></h5><br>
-            {% for choice in question.choice %}
-              <input type="checkbox">{{choice.choice}}<br>
-            {% endfor %}
-        {% endfor %}
-        <a href="{% url 'add_question' new_qid=new_qid new_eid=new_eid%}">Add a question</a>
-        <a href="{% url 'homepage' %}">Back</a>
+      {% include "question_list_editable.html" with questions=questions new_qid=new_qid editable=True eid=new_eid%}
+        <a href="{% url 'homepage' %}" class="btn btn-primary" role="button">Back</a>
+        <a href="{% url 'remove_event' eid=new_eid %}" class="btn btn-danger" role="button">Remove Event</a>
     {% endif %}
 {% endblock %}

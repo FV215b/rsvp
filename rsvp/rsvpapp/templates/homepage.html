@@ -1,34 +1,61 @@
 {% extends 'base.html' %}
 
 {% block header %}
-  <h1>homepage</h1>
+
   {% if user.is_authenticated %}
-    <a>Hi {{user.first_name}} !</a>
-    <a href="{% url 'logout' %}">logout</a>
+    <h1>Hi {{user.first_name}} !</h1>
+    <a href="{% url 'logout' %}">Logout</a>
   {% else %}
-    <a>Please log in!</a>
+    <h1>Please log in!</h1>
     <a href="{% url 'login' %}">login</a>
   {% endif %}
 {% endblock %}
 
 {% block content %}
 {% if user.is_authenticated %}
-  <a href="{% url 'create_event' new_eid=next_event_id %}">Create New Event!</a>
-
-  <ul>
-    {% for permission in permissions %}
+  <div class="container">
+    <a href="{% url 'create_event' new_eid=next_event_id %}" class="btn btn-info" role="button" >Create New Event!</a>
+  </div>
+  <div class="container">
+  <h3><b>Your Events</b></h3>
+  </div>
+  <div class="container">
+  <table class="table table-hover">
+    <thead>
+      <tr>
+        <th>Event Name</th>
+        <th>Your Permision</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for permission in permissions %}
       {% if permission.permission == 0 %}
-        <li><a href="{% url 'view_event' eid=permission.event.eid permission=permission.permission%}">{{ permission.event.title }} - Owner</a></li>
+        <tr>
+          <td>{{ permission.event.title }}</td>
+          <td>Owner</td>
+          <td><a href="{% url 'view_event' eid=permission.event.eid permission=permission.permission%}">See Details</a></td>
+        </tr>
       {% elif permission.permission == 1 %}
-        <li><a href="{% url 'view_event' eid=permission.event.eid permission=permission.permission%}">{{ permission.event.title }} - Vendor</a></li>
+        <tr>
+          <td>{{ permission.event.title }}</td>
+          <td>Vendor</td>
+          <td><a href="{% url 'view_event' eid=permission.event.eid permission=permission.permission%}">See Details</a></td>
+        </tr>
       {% elif permission.permission == 2 %}
-        <li><a href="{% url 'view_event' eid=permission.event.eid permission=permission.permission%}">{{ permission.event.title }} - Guest</a></li>
-      {% else %}
-        <li><a href="{% url 'view_event' eid=permission.event.eid permission=permission.permission%}">{{ permission.event.title }} - Unknown</a></li>
+        <tr>
+          <td>{{ permission.event.title }}</td>
+          <td>Guest</td>
+          <td><a href="{% url 'view_event' eid=permission.event.eid permission=permission.permission%}">See Details</a></td>
+        </tr>
     {% endif %}
     {% empty %}
-    <li>Currently, you haven't attended any events.</li>
+    <tr>Currently, you haven't attended any events.</tr>
     {% endfor %}
-  </ul>
+    </tbody>
+  </table>
+</div>
+<div class="container">
+
+</div>
 {% endif %}
 {% endblock %}

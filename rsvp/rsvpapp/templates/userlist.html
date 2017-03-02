@@ -1,0 +1,9 @@
+<ul class="list-group">
+  {% for user in users %}
+  <li class="list-group-item">{{user.username}}  ({{user.first_name}} {{user.last_name}})
+    <a href="{% url 'remove_permission' eid=eid username=user.username permission=permission %}">Remove</a>
+  </li>
+  {% empty %}
+  <p>{{empty_text}}</p>
+  {% endfor %}
+</ul>

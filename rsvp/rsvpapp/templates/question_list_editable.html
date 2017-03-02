@@ -1,0 +1,22 @@
+<div class="panel panel-default">
+  <div class="panel-heading">Questions</div>
+    <div class="panel-body">
+      <a href="{% url 'add_question' new_qid=new_qid new_eid=eid%}" class="btn btn-primary" role="button" >Add a question</a>
+      <div class="panel-group">
+        {% for question in questions %}
+        <div class="panel panel-default">
+          <div class="panel-heading">{{question.question}}
+              <a href="{% url 'remove_question' qid=question.qid eid=eid %}">remove</a>
+              <a href="{% url 'add_question' new_qid=question.qid new_eid=eid %}">edit</a>
+          </div>
+            <div class="panel-body">
+              {% for choice in question.choice %}
+                <input type="checkbox">{{choice.choice}}<br>
+              {% endfor %}
+            </div>
+        </div>
+        {% endfor %}
+      </div>
+  </div>
+</div>
+</div>
