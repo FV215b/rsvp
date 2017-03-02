@@ -202,7 +202,7 @@ def view_event_as_vendor(request, template_name, context):
     event = get_object_or_404(Event, pk=eid)
     questions = event.question.all()
     effective_questions = questions.filter(visibility=True) 
-    question_list = get_question_list(effective_questions)
+    question_list = get_q_list(effective_questions)
     event_data = dict([('event', event), ('questions', question_list)])
     context['event_data'] = event_data
     changeable_question = dict([('event', event), ('questions', get_changeable_list(request.user, effective_questions))])
@@ -230,7 +230,7 @@ def view_event_as_guest(request, template_name, context):
     event = get_object_or_404(Event, pk=eid)
     questions = event.question.all()
     effective_questions = questions.filter(visibility=True).filter(changeable=True) 
-    question_list = get_question_list(effective_questions)
+    question_list = get_q_list(effective_questions)
     event_data = dict([('event', event), ('questions', question_list)])
     context['event_data'] = event_data    
     checked_choice = dict([('event', event), ('choices', get_checked_list(request.user, effective_questions))])
@@ -269,6 +269,12 @@ def get_checked_list(user, questions):
             if choice.user.filter(username=user.username).exists():
                 checked_list.append(choice)
     return checked_list
+
+def get_q_list(questions):
+    question_list = []
+    for question in questions:
+        question_list.append(dict([('question', question), ('choice', question.choice.all())]))
+    return question_list
 
 def get_question_list(questions):
     question_list = []
