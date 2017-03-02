@@ -15,11 +15,11 @@ import os
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-EMAIL_BACKEND='django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST=127.0.0.1
-EMAIL_PORT=25
-EMAIL_HOST_USER=<smtp_user>
-EMAIL_HOST_PASSWORD=<smtp_user_pwd>
+#EMAIL_BACKEND='django.core.mail.backends.smtp.EmailBackend'
+#EMAIL_HOST=127.0.0.1
+#EMAIL_PORT=25
+#EMAIL_HOST_USER=<smtp_user>
+#EMAIL_HOST_PASSWORD=<smtp_user_pwd>
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.10/howto/deployment/checklist/
@@ -30,8 +30,9 @@ SECRET_KEY = '19$9@btv5!!^)-s79)(d^jh71+4u^!@#$sqeel8jw&ozj_)pq+'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["colab-sbx-pvt-13.oit.duke.edu"]
-
+ALLOWED_HOSTS = ["colab-sbx-pvt-13.oit.duke.edu",
+            "colab-sbx-pvt-21.oit.duke.edu"
+]
 
 # Application definition
 
