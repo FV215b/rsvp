@@ -20,5 +20,7 @@ urlpatterns = [
     url(r'^remove_question/(?P<eid>\w+)/(?P<qid>\w+)', views.remove_question, name='remove_question'),
     url(r'^remove_permission/(?P<eid>\w+)/(?P<username>[\s\S]*?)/(?P<permission>\d)', views.remove_permission, name='remove_permission'),
     url(r'^choice_detail/(?P<cid>\d+)/(?P<eid>\w+)/(?P<permission>\d)', views.choice_detail, {'template_name': 'choice_detail.html'}, name='choice_detail'),
-    url(r'^no_permission/', views.no_permission, name='no_permission')
+    url(r'^no_permission/', views.no_permission, name='no_permission'),
+    url(r'^add_answer/(?P<eid>\w+)', views.add_answer, name='add_answer'),
+    url(r'^question_changeable/(?P<eid>\w+)', views.question_changeable, name='question_changeable'),
 ]

@@ -197,6 +197,79 @@ def choice_detail(request, template_name, cid, eid, permission):
 def no_permission(request):
     return render(request, 'no_permission.html')
 
+def view_event_as_vendor(request, template_name, context):
+    eid = context['eid']
+    event = get_object_or_404(Event, pk=eid)
+    questions = event.question.all()
+    effective_questions = questions.filter(visibility=True) 
+    question_list = get_question_list(effective_questions)
+    event_data = dict([('event', event), ('questions', question_list)])
+    context['event_data'] = event_data
+    changeable_question = dict([('event', event), ('questions', get_changeable_list(request.user, effective_questions))])
+    context['changeable_question'] = changeable_question
+    return render(request, template_name, context)
+
+def question_changeable(request, eid):
+    if request.method == "POST":
+        event = get_object_or_404(Event, pk=eid)
+        names = request.POST
+        questions = event.question.all()
+        effective_questions = questions.filter(visibility=True)
+        for question in effective_questions:
+            question_name = event.title + "#" + question.question
+            if question_name in names:
+                question.changeable = True
+                question.save()
+            elif question.changeable == True:
+                question.changeable = False
+                question.save()
+    return HttpResponseRedirect(reverse('homepage'))    
+
+def view_event_as_guest(request, template_name, context):
+    eid = context['eid']
+    event = get_object_or_404(Event, pk=eid)
+    questions = event.question.all()
+    effective_questions = questions.filter(visibility=True).filter(changeable=True) 
+    question_list = get_question_list(effective_questions)
+    event_data = dict([('event', event), ('questions', question_list)])
+    context['event_data'] = event_data    
+    checked_choice = dict([('event', event), ('choices', get_checked_list(request.user, effective_questions))])
+    context['checked_choice'] = checked_choice
+    return render(request, template_name, context)
+
+def add_answer(request, eid):
+    if request.method == "POST":
+        event = get_object_or_404(Event, pk=eid)
+        names = request.POST
+        questions = event.question.all()
+        effective_questions = questions.filter(visibility=True).filter(changeable=True)
+        for question in effective_questions:
+            choices = question.choice.all()
+            for choice in choices:
+                choice_name = event.title + "#" + choice.question.question + "#" + choice.choice + "#1"
+                if choice_name in names:
+                    choice.user.add(request.user)
+                    choice.save()
+                elif choice.user.filter(username=request.user.username).exists():
+                    choice.user.remove(request.user)
+                    choice.save()
+    return HttpResponseRedirect(reverse('homepage'))
+
+def get_changeable_list(user, questions):
+    changeable_list = []
+    for question in questions:
+        if question.changeable == True:
+            changeable_list.append(question)
+    return changeable_list
+
+def get_checked_list(user, questions):
+    checked_list = []
+    for question in questions:
+        for choice in question.choice.all():
+            if choice.user.filter(username=user.username).exists():
+                checked_list.append(choice)
+    return checked_list
+
 def get_question_list(questions):
     question_list = []
     for question in questions:
@@ -271,3 +344,4 @@ def save_permission(add_user, event, permission):
     if exist_permission.count() == 0:
         add_user_permission = Permission(user=add_user, event=event, permission=int(permission))
         add_user_permission.save()
+
