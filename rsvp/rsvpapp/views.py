@@ -154,6 +154,34 @@ def view_event_as_owner(request, template, context):
     context['vendor_form']=vendor_form
     return render(request, template, context)
 
+def view_event_as_vendor(request, template_name, context):
+    eid = context['eid']
+    event = get_object_or_404(Event, pk=eid)
+    questions = event.question.all()
+    effective_questions = questions.filter(visibility=True) 
+    question_list = get_question_list(effective_questions)
+    event_data = dict([('event', event), ('questions', question_list)])
+    context['event_data'] = event_data
+    changeable_question = dict([('event', event), ('questions', get_changeable_list(request.user, effective_questions))])
+    context['changeable_question'] = changeable_question
+    return render(request, template_name, context)
+
+def question_changeable(request, eid):
+    if request.method == "POST":
+        event = get_object_or_404(Event, pk=eid)
+        names = request.POST
+        questions = event.question.all()
+        effective_questions = questions.filter(visibility=True)
+        for question in effective_questions:
+            question_name = event.title + "#" + question.question
+            if question_name in names:
+                question.changeable = True
+                question.save()
+            elif question.changeable == True:
+                question.changeable = False
+                question.save()
+    return HttpResponseRedirect(reverse('homepage'))    
+
 def view_event_as_guest(request, template_name, context):
     eid = context['eid']
     event = get_object_or_404(Event, pk=eid)
@@ -161,8 +189,7 @@ def view_event_as_guest(request, template_name, context):
     effective_questions = questions.filter(visibility=True).filter(changeable=True) 
     question_list = get_question_list(effective_questions)
     event_data = dict([('event', event), ('questions', question_list)])
-    context['event_data'] = event_data
-    
+    context['event_data'] = event_data    
     checked_choice = dict([('event', event), ('choices', get_checked_list(request.user, effective_questions))])
     context['checked_choice'] = checked_choice
     return render(request, template_name, context)
@@ -184,6 +211,14 @@ def add_answer(request, eid):
                     choice.user.remove(request.user)
                     choice.save()
     return HttpResponseRedirect(reverse('homepage'))
+
+
+def get_changeable_list(user, questions):
+    changeable_list = []
+    for question in questions:
+        if question.changeable == True:
+            changeable_list.append(question)
+    return changeable_list
 
 def get_checked_list(user, questions):
     checked_list = []
