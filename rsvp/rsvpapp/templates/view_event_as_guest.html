@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block title %}Guest Event{% endblock %}
+
+{% block header %}
+  <h1>{{event_data.event.title}}</h1>
+  <div>description: {{event_data.event.description}}</div>
+  <div>Address: {{event_data.event.address}}</div>
+  <div>Start time: {{event_data.event.start_time}}</div>
+{% endblock %}
+
+{% block content %}
+    {% if user.is_authenticated %}
+        <form method="post" action="{% url 'add_answer' eid=eid %}">
+            {% csrf_token %}
+            {% for question in event_data.questions %}
+                <div>{{question.question}}</div><br>
+                {% for choice in question.choice %}
+                     {% if choice in checked_choice.choices %}
+                        <input type="checkbox", name="{{event_data.event.title}}#{{question.question}}#{{choice.choice}}#1", checked>{{choice.choice}}<br>
+                    {% else %}
+                        <input type="checkbox", name="{{event_data.event.title}}#{{question.question}}#{{choice.choice}}#1">{{choice.choice}}<br>
+                    {% endif %}
+                {% endfor %}
+            {% endfor %}
+            <button type="submit">Save</button>
+        </form>
+        <a href="{% url 'homepage' %}">Back</a>
+    {% endif %}
+{% endblock %}

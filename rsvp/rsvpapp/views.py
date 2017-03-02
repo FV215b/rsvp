@@ -154,6 +154,45 @@ def view_event_as_owner(request, template, context):
     context['vendor_form']=vendor_form
     return render(request, template, context)
 
+def view_event_as_guest(request, template_name, context):
+    eid = context['eid']
+    event = get_object_or_404(Event, pk=eid)
+    questions = event.question.all()
+    effective_questions = questions.filter(visibility=True).filter(changeable=True) 
+    question_list = get_question_list(effective_questions)
+    event_data = dict([('event', event), ('questions', question_list)])
+    context['event_data'] = event_data
+    
+    checked_choice = dict([('event', event), ('choices', get_checked_list(request.user, effective_questions))])
+    context['checked_choice'] = checked_choice
+    return render(request, template_name, context)
+
+def add_answer(request, eid):
+    if request.method == "POST":
+        event = get_object_or_404(Event, pk=eid)
+        names = request.POST
+        questions = event.question.all()
+        effective_questions = questions.filter(visibility=True).filter(changeable=True)
+        for question in effective_questions:
+            choices = question.choice.all()
+            for choice in choices:
+                choice_name = event.title + "#" + choice.question.question + "#" + choice.choice + "#1"
+                if choice_name in names:
+                    choice.user.add(request.user)
+                    choice.save()
+                elif choice.user.filter(username=request.user.username).exists():
+                    choice.user.remove(request.user)
+                    choice.save()
+    return HttpResponseRedirect(reverse('homepage'))
+
+def get_checked_list(user, questions):
+    checked_list = []
+    for question in questions:
+        for choice in question.choice.all():
+            if choice.user.filter(username=user.username).exists():
+                checked_list.append(choice)
+    return checked_list
+
 def get_question_list(questions):
     question_list = []
     for question in questions:

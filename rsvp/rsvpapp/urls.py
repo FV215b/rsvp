@@ -16,5 +16,6 @@ urlpatterns = [
     url(r'^add_vendor/(?P<eid>\w+)', views.add_user, {'template_name': 'add_user_to_event.html'}, name='add_vendor'),
     url(r'^add_guest/(?P<eid>\w+)', views.add_user, {'template_name': 'add_user_to_event.html'}, name='add_guest'),
     url(r'^add_owner/(?P<eid>\w+)', views.add_user, {'template_name': 'add_user_to_event.html'}, name='add_owner'),
+    url(r'^add_answer/(?P<eid>\w+)', views.add_answer, name='add_answer'),
     #url(r'^add_choice/(?P<eid>\w+)', views.add_user, {'template_name': 'add_user_to_event.html'}, name='add_owner'),
 ]
