@@ -1,0 +1,14 @@
+h1 {
+    font-size: 60px;
+}
+th {
+    padding-right: 20px;
+}
+.panel-heading {
+  font-size: 15px;
+  font-weight:bold;
+}
+input {
+  margin-left: 5px;
+  margin-right: 5px;
+}

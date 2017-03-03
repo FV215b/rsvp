@@ -1,20 +1,23 @@
 {% extends 'base.html' %}
 
-{% block title %}Guest Event{% endblock %}
+{% block header %}<h1>View Event</h1>{% endblock %}
 
-{% block header %}
-  <h1>{{event_data.event.title}}</h1>
-  <div>description: {{event_data.event.description}}</div>
-  <div>Address: {{event_data.event.address}}</div>
-  <div>Start time: {{event_data.event.start_time}}</div>
-{% endblock %}
+
 
 {% block content %}
+    {% include 'event_info.html' %}
     {% if user.is_authenticated %}
+    <div class="panel panel-default">
+      <div class="panel-heading">Questions</div>
+      <div class="panel-body">
+        <div class="panel-group">
         <form method="post" action="{% url 'add_answer' eid=eid %}">
             {% csrf_token %}
             {% for question in event_data.questions %}
-                <div>{{question.question}}</div>
+              <div class="panel panel-default">
+              <div class="panel-heading">{{question.question}}</div>
+              <div class="panel-body">
+              <div class="list-group">
                 {% if question.q_type == 0 %}
                     {% for choice in question.choice %}
                         {% if choice in checked_choice.choices %}
@@ -35,9 +38,14 @@
                     <div>{{question.q_type}}</div>
                 {% endif %}
                 <br><br>
+                </div>
+              </div>
             {% endfor %}
-            <button type="submit">Save</button><br>
+            <button type="submit" class="btn btn-primary">Save</button>
         </form>
-        <a href="{% url 'homepage' %}">Back</a>
+      </div>
+    </div>
+  </div>
+    {% include 'homepage_back.html' %}
     {% endif %}
 {% endblock %}

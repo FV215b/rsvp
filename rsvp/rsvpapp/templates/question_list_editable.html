@@ -6,6 +6,11 @@
         {% for question in questions %}
         <div class="panel panel-default">
           <div class="panel-heading">{{question.question}}
+            {% if question.visibility %}
+              (Visible to vendor)
+            {% else %}
+              (Not Visible to vendor)
+            {% endif %}
               <a href="{% url 'remove_question' qid=question.qid eid=eid %}">remove</a>
               <a href="{% url 'add_question' new_qid=question.qid new_eid=eid %}">edit</a>
           </div>

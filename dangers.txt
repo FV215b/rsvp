@@ -1,0 +1,26 @@
+Most of our functions are implemented based on django's build-in functions, such
+as build-in authentication system, csrf token, django queryset, generate forms
+according to Models(ModelForm), build-in email function.
+
+This allows us to prevent following risks:
+1. Most of Cross site scripting (XSS), which is ensured by using django template.
+2. Cross site request forgery (CSRF), by adding csrf token to forms, also django's
+3. SQL injection, since all we used was queryset, not raw SQL.
+4. The leak of user password, because django's authorization system stores password
+  in reliable hashing and also has used salt.
+5. For all the pages we access, we will check if user has permission for this page.
+
+However, our project also has some safety flaws:
+1. Most of the arguments that are used in the redirection are posted in GET request.
+Though these values are not client data and may not seem to make any sense to the users,
+but we cannot guarantee that some people would guess out the meaning and manipulate
+these variables.
+2. We didn't use HTTPS, which encrypts all the data transferred through internet.
+To use HTTPS we need to have a signed certificate, but we don't have that.
+3. We can't automatically disable the session yet, for example, we haven't been able
+to log out a session when there's a timeout, or disable the and refresh the timeout
+session automatically.
+4. We haven't been able to limit the the traffic to server, so we are pretty vulnerable
+to DDOS attacks now.
+5. Normally we would expect server to keep a log, so that we can recover when downtime
+  occurs.

@@ -15,11 +15,11 @@ import os
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-#EMAIL_BACKEND='django.core.mail.backends.smtp.EmailBackend'
-#EMAIL_HOST=127.0.0.1
-#EMAIL_PORT=25
-#EMAIL_HOST_USER=<smtp_user>
-#EMAIL_HOST_PASSWORD=<smtp_user_pwd>
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'rsvphw2@gmail.com'
+EMAIL_HOST_PASSWORD = 'q1w2e3r4@@'
+EMAIL_PORT = 587
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.10/howto/deployment/checklist/
@@ -126,3 +126,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.10/howto/static-files/
 
 STATIC_URL = '/static/'
+
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, 'static'),
+)
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')

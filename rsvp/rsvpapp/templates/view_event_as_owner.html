@@ -5,35 +5,7 @@
 {% endblock %}
 
 {% block content %}
-        <div class="panel-group">
-          <div class="panel panel-default">
-            <div class="panel-heading">Event Info</div>
-              <div class="panel-body">
-                <table class="table-hover">
-                  <thead>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <th scope="row">Event name: </th>
-                      <td>{{event_data.event.title}}</td>
-                    </tr>
-                    <tr>
-                      <th scope="row">Description: </th>
-                      <td>{{event_data.event.description}}</td>
-                    </tr>
-                    <tr>
-                      <th scope="row">Address: </th>
-                      <td>{{event_data.event.address}}</td>
-                    </tr>
-                    <tr>
-                      <th scope="row">Start time: </th>
-                      <td>{{event_data.event.start_time}}</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
+    {% include "event_info.html" %}
           <div class="panel panel-default">
             <div class="panel-heading">Added Owners</div>
               <div class="panel-body">
@@ -53,6 +25,7 @@
               </form>
             </div>
         </div>
+
         {% include "question_list_not_editable.html" with questions=event_data.questions eid=event_data.event.eid  new_qid=qid permission=0%}
 
         <a href="{% url 'homepage' %}" class="btn btn-primary" role="button" >Back</a>
