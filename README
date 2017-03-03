@@ -1,0 +1,20 @@
+SETUP:
+1. go to postgresql. Do "CREATE DATABASE rsvpdb;"
+2. Make migrations in terminal: "python3 manage.py makemigrations"
+3. Migrate in terminal: "python3 manage.py migrate"
+4. Go to rsvpapp/login as First page.
+
+A FEW MORE WORDS:
+1. You can create an account, log in, log out the homepage. You should be able
+  to see a list of events in your homepage.
+2. For owner, they can view and edit all the information of event, add/remove guest, owner, vendor.
+  But they can't remove themselves. If A user doesn't exist in system, nothing should happen.
+  They won't be added.
+  An owner can also check how many users selected each choice, when they click on
+  each row, they should be able to see who chose them.
+  Every time an event has any changes including remove, add, edit anything, all people involved
+  would be noticed via email.
+3. For vendor, they can see how many people have chosen each question, and they
+  should be able to change if a question is changeable by guests. If a question is not
+  changeable, then the guests won't see the question.
+4. For Guests, they can only see and answer the questions.
