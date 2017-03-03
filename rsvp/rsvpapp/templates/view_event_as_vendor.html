@@ -14,16 +14,17 @@
         <form method="post" action="{% url 'question_changeable' eid=eid %}">
             {% csrf_token %}
             {% for question in event_data.questions %}
-                {% if question.question in changeable_question.questions %}
+                {% if question.changeable %}
                     <input type="checkbox", name="{{event_data.event.title}}#{{question.question}}", checked>{{question.question}}<br>
                 {% else %}
                     <input type="checkbox", name="{{event_data.event.title}}#{{question.question}}">{{question.question}}<br>
                 {% endif %}
                 {% for choice in question.choice %}
-                    <div>{{choice.choice}}----{{choice.user.count}}</div><br>
+                    <div>{{choice.choice}}----{{choice.user.count}}</div>
                 {% endfor %}
+                <br>
             {% endfor %}
-            <button type="submit">Save</button>
+            <button type="submit">Save</button><br>
         </form>
         <a href="{% url 'homepage' %}">Back</a>
     {% endif %}

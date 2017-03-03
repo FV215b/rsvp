@@ -34,7 +34,8 @@ class Question(models.Model):
         (TEXT, "text question"),
     )
     qid = models.CharField(max_length=50, primary_key=True)
-    q_type = models.DecimalField(max_digits=1, decimal_places=0, default=MULTICHOICE, choices=QUESTION_TYPE_CHOICES)
+    #q_type = models.DecimalField(max_digits=1, decimal_places=0, default=MULTICHOICE, choices=QUESTION_TYPE_CHOICES)
+    q_type = models.IntegerField(default=MULTICHOICE, choices=QUESTION_TYPE_CHOICES)
     event = models.ForeignKey(Event, on_delete=models.CASCADE, null = True, related_name="question")
     question = models.CharField(max_length=50)
     visibility = models.BooleanField(default=True)

@@ -1,4 +1,5 @@
 import string
+import json
 from django.forms.models import model_to_dict
 from django.template import RequestContext
 from django.shortcuts import render, get_object_or_404
@@ -202,11 +203,8 @@ def view_event_as_vendor(request, template_name, context):
     event = get_object_or_404(Event, pk=eid)
     questions = event.question.all()
     effective_questions = questions.filter(visibility=True) 
-    question_list = get_q_list(effective_questions)
-    event_data = dict([('event', event), ('questions', question_list)])
+    event_data = dict([('event', event), ('questions', get_q_list(effective_questions))])
     context['event_data'] = event_data
-    changeable_question = dict([('event', event), ('questions', get_changeable_list(request.user, effective_questions))])
-    context['changeable_question'] = changeable_question
     return render(request, template_name, context)
 
 def question_changeable(request, eid):
@@ -230,8 +228,7 @@ def view_event_as_guest(request, template_name, context):
     event = get_object_or_404(Event, pk=eid)
     questions = event.question.all()
     effective_questions = questions.filter(visibility=True).filter(changeable=True) 
-    question_list = get_q_list(effective_questions)
-    event_data = dict([('event', event), ('questions', question_list)])
+    event_data = dict([('event', event), ('questions', get_q_list(effective_questions))])
     context['event_data'] = event_data    
     checked_choice = dict([('event', event), ('choices', get_checked_list(request.user, effective_questions))])
     context['checked_choice'] = checked_choice
@@ -240,27 +237,27 @@ def view_event_as_guest(request, template_name, context):
 def add_answer(request, eid):
     if request.method == "POST":
         event = get_object_or_404(Event, pk=eid)
-        names = request.POST
+        values = request.POST
+        print(values)
         questions = event.question.all()
         effective_questions = questions.filter(visibility=True).filter(changeable=True)
         for question in effective_questions:
-            choices = question.choice.all()
-            for choice in choices:
-                choice_name = event.title + "#" + choice.question.question + "#" + choice.choice + "#1"
-                if choice_name in names:
-                    choice.user.add(request.user)
-                    choice.save()
-                elif choice.user.filter(username=request.user.username).exists():
-                    choice.user.remove(request.user)
-                    choice.save()
+            question_value = str(event.title + "#" + question.question + "#1")
+            if question_value in values:
+                #print("question_value: " + question_value)        
+                question_list = values.getlist(question_value)
+                print(question_list)
+                print(type(question_list))
+                for choice in question.choice.all():
+                    choice_value = str(event.title + "#" + question.question + "#" + choice.choice + "#1")
+                    if choice_value in question_list: 
+                        print("in: " + choice_value)
+                        choice.user.add(request.user)
+                        choice.save() 
+                    elif choice.user.filter(username=request.user.username).exists():
+                        choice.user.remove(request.user)
+                        choice.save()
     return HttpResponseRedirect(reverse('homepage'))
-
-def get_changeable_list(user, questions):
-    changeable_list = []
-    for question in questions:
-        if question.changeable == True:
-            changeable_list.append(question)
-    return changeable_list
 
 def get_checked_list(user, questions):
     checked_list = []
@@ -273,7 +270,7 @@ def get_checked_list(user, questions):
 def get_q_list(questions):
     question_list = []
     for question in questions:
-        question_list.append(dict([('question', question), ('choice', question.choice.all())]))
+        question_list.append(dict([('question', question), ('choice', question.choice.all()), ('q_type', question.q_type), ('changeable', question.changeable)]))
     return question_list
 
 def get_question_list(questions):

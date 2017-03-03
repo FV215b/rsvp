@@ -14,16 +14,29 @@
         <form method="post" action="{% url 'add_answer' eid=eid %}">
             {% csrf_token %}
             {% for question in event_data.questions %}
-                <div>{{question.question}}</div><br>
-                {% for choice in question.choice %}
-                     {% if choice in checked_choice.choices %}
-                        <input type="checkbox", name="{{event_data.event.title}}#{{question.question}}#{{choice.choice}}#1", checked>{{choice.choice}}<br>
-                    {% else %}
-                        <input type="checkbox", name="{{event_data.event.title}}#{{question.question}}#{{choice.choice}}#1">{{choice.choice}}<br>
-                    {% endif %}
-                {% endfor %}
+                <div>{{question.question}}</div>
+                {% if question.q_type == 0 %}
+                    {% for choice in question.choice %}
+                        {% if choice in checked_choice.choices %}
+                            <input type="checkbox", name="{{event_data.event.title}}#{{question.question}}#1", value="{{event_data.event.title}}#{{question.question}}#{{choice.choice}}#1", checked>{{choice.choice}}
+                        {% else %}
+                            <input type="checkbox", name="{{event_data.event.title}}#{{question.question}}#1", value="{{event_data.event.title}}#{{question.question}}#{{choice.choice}}#1">{{choice.choice}}
+                        {% endif %}
+                    {% endfor %}
+                {% elif question.q_type == 1 %}
+                    {% for choice in question.choice %}
+                        {% if choice in checked_choice.choices %}
+                            <input type="radio", name="{{event_data.event.title}}#{{question.question}}#1", value="{{event_data.event.title}}#{{question.question}}#{{choice.choice}}#1", checked>{{choice.choice}}
+                        {% else %}
+                            <input type="radio", name="{{event_data.event.title}}#{{question.question}}#1", value="{{event_data.event.title}}#{{question.question}}#{{choice.choice}}#1">{{choice.choice}}
+                        {% endif %}
+                    {% endfor %}
+                {% else %}
+                    <div>{{question.q_type}}</div>
+                {% endif %}
+                <br><br>
             {% endfor %}
-            <button type="submit">Save</button>
+            <button type="submit">Save</button><br>
         </form>
         <a href="{% url 'homepage' %}">Back</a>
     {% endif %}
