@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block header%}
+<h1>Guest Choice</h1>
+{% endblock %}
+
+{% block content %}
+<div class="panel panel-default">
+  <div class="panel-heading">Questions</div>
+  <div class="panel-body">
+    <div class="panel-group">
+        {% for question in event_data.questions %}
+          <div class="panel panel-default">
+          <div class="panel-heading">{{question.question}}</div>
+          <div class="panel-body">
+          <div class="list-group">
+              {% for choice in question.choice %}
+                {% if choice in checked_choice.choices %}
+                  <a class="list-group-item"><input type="checkbox", name="{{event_data.event.title}}#{{question.question}}#1", value="{{event_data.event.title}}#{{question.question}}#{{choice.choice}}#1", checked>{{choice.choice}}</a>
+                {% endif %}
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+      <a href="{% url 'view_event' eid=eid permission=0%}" class="btn btn-primary" role="button" >Back</a>
+  </div>
+</div>
+{% endblock %}

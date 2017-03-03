@@ -224,7 +224,7 @@ def view_event_as_vendor(request, template_name, context):
     if not check_permission(request.user, event, 1):
         return no_permission(request)
     questions = event.question.all()
-    effective_questions = questions.filter(visibility=True) 
+    effective_questions = questions.filter(visibility=True)
     event_data = dict([('event', event), ('questions', get_q_list(effective_questions))])
     context['event_data'] = event_data
     return render(request, template_name, context)
@@ -251,11 +251,22 @@ def view_event_as_guest(request, template_name, context):
     if not check_permission(request.user, event, 2):
         return no_permission(request)
     questions = event.question.all()
-    effective_questions = questions.filter(visibility=True).filter(changeable=True) 
+    effective_questions = questions.filter(visibility=True).filter(changeable=True)
     event_data = dict([('event', event), ('questions', get_q_list(effective_questions))])
-    context['event_data'] = event_data    
+    context['event_data'] = event_data
     checked_choice = dict([('event', event), ('choices', get_checked_list(request.user, effective_questions))])
     context['checked_choice'] = checked_choice
+    return render(request, template_name, context)
+
+def guest_choice(request, template_name, eid, username):
+    event = get_object_or_404(Event, pk=eid)
+    guest = get_user(username)
+    if not check_permission(request.user, event, 0):
+        return no_permission(request)
+    questions = event.question.all()
+    event_data = dict([('event', event), ('questions', get_q_list(questions))])
+    checked_choice = dict([('event', event), ('choices', get_checked_list(guest, questions))])
+    context = {'event_data': event_data, 'checked_choice': checked_choice, 'eid': eid}
     return render(request, template_name, context)
 
 def add_answer(request, eid):
@@ -268,16 +279,16 @@ def add_answer(request, eid):
         for question in effective_questions:
             question_value = str(event.title + "#" + question.question + "#1")
             if question_value in values:
-                #print("question_value: " + question_value)        
+                #print("question_value: " + question_value)
                 question_list = values.getlist(question_value)
                 print(question_list)
                 print(type(question_list))
                 for choice in question.choice.all():
                     choice_value = str(event.title + "#" + question.question + "#" + choice.choice + "#1")
-                    if choice_value in question_list: 
+                    if choice_value in question_list:
                         print("in: " + choice_value)
                         choice.user.add(request.user)
-                        choice.save() 
+                        choice.save()
                     elif choice.user.filter(username=request.user.username).exists():
                         choice.user.remove(request.user)
                         choice.save()
@@ -287,8 +298,11 @@ def get_checked_list(user, questions):
     checked_list = []
     for question in questions:
         for choice in question.choice.all():
-            if choice.user.filter(username=user.username).exists():
-                checked_list.append(choice)
+            try:
+                if choice.user.filter(username=user.username).exists():
+                    checked_list.append(choice)
+            except:
+                pass
     return checked_list
 
 def get_q_list(questions):

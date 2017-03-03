@@ -23,4 +23,5 @@ urlpatterns = [
     url(r'^no_permission/', views.no_permission, name='no_permission'),
     url(r'^add_answer/(?P<eid>\w+)', views.add_answer, name='add_answer'),
     url(r'^question_changeable/(?P<eid>\w+)', views.question_changeable, name='question_changeable'),
+    url(r'^guest_choice/(?P<eid>\w+)/(?P<username>[\s\S]*?)', views.guest_choice, {'template_name': 'guest_choice.html'}, name='guest_choice'),
 ]

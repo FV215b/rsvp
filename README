@@ -18,3 +18,4 @@ A FEW MORE WORDS:
   should be able to change if a question is changeable by guests. If a question is not
   changeable, then the guests won't see the question.
 4. For Guests, they can only see and answer the questions.
+5. Question type supports single choice and multiple choice
