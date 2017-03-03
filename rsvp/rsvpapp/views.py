@@ -45,6 +45,9 @@ def create_event(request, template_name, new_eid):
     if event is None:
         event = Event.objects.create(pk = new_eid)
         event.save()
+        save_permission(request.user, event, 0)
+    if not check_permission(request.user, event, 0):
+        return no_permission(request)
     new_qid = get_next_qid(new_eid)
     questions = event.question.all()
     question_list = get_question_list(questions)
@@ -60,11 +63,10 @@ def create_event(request, template_name, new_eid):
         form = EventForm(data=request.POST, instance=event)
         if form.is_valid():
             form.save()
-            save_permission(request.user, event, 0)
-            #if form.has_changed():
-            #    notify(request.user, guests, event)
-            #    notify(request.user, owners, event)
-            #    notify(request.user, vendors, event)
+            if form.has_changed():
+                notify(request.user, guests, event)
+                notify(request.user, owners, event)
+                notify(request.user, vendors, event)
     else:
         form = EventForm(instance=event, data = model_to_dict(event))
 
@@ -83,6 +85,8 @@ def create_event(request, template_name, new_eid):
 @login_required
 def add_question(request, template_name, new_eid, new_qid):
     event = get_object(Event, new_eid)
+    if not check_permission(request.user, event, 0):
+        return no_permission(request)
     question = get_object(Question, new_qid)
     if question is None:
         question = Question.objects.create(pk=new_qid)
@@ -93,6 +97,8 @@ def add_question(request, template_name, new_eid, new_qid):
             question_form.save()
             choice_formset.save()
             event.question.add(question)
+            if question_form.has_changed() or choice_formset.has_changed():
+                notifyAll(request.user, event)
     else:
         question_form = QuestionForm(instance=question)
         choice_formset = ChoiceFormSet(instance=question, prefix='choices')
@@ -113,6 +119,9 @@ def view_event(request, eid, permission):
 
 @login_required
 def add_user(request, template_name, eid, permission):
+    event = get_object_or_404(Event, pk=eid)
+    if not check_permission(request.user, event, 0):
+        return no_permission(request)
     if request.method == "POST":
         add_user_form=AddUserForm(request.POST)
         if add_user_form.is_valid():
@@ -131,13 +140,12 @@ def add_user(request, template_name, eid, permission):
 
 @login_required
 def view_event_as_owner(request, template, context):
-    if context['permission'] != '0':
-        return no_permission(request)
     eid = context['eid']
     event = get_object_or_404(Event, pk = eid)
+    if not check_permission(request.user, event, 0):
+        return no_permission(request)
     qid = get_next_qid(eid)
     members = event.members.all()
-    print(members)
     owners = members.filter(permission__permission = 0)
     vendors = members.filter(permission__permission = 1)
     guests = members.filter(permission__permission = 2)
@@ -158,24 +166,36 @@ def view_event_as_owner(request, template, context):
     return render(request, template, context)
 
 def remove_event(request, eid):
-    event_to_delete = get_object(Event, eid)
+    event_to_delete = get_object_or_404(Event, pk=eid)
+    if not check_permission(request.user, event, 0):
+        return no_permission(request)
     if event_to_delete is not None:
+        notifyAll(request.user, event_to_delete)
         event_to_delete.delete()
     return HttpResponseRedirect(reverse('homepage'))
 
 @login_required
 def remove_question(request, eid, qid):
+    event = get_object_or_404(Event, pk=eid)
+    if not check_permission(request.user, event, 0):
+        return no_permission(request)
     question_to_delete = get_object(Question, qid)
     if question_to_delete is not None:
+        try:
+            notifyAll(from_user, event)
+        except:
+            print("Event doesn't exist!")
         question_to_delete.delete()
     return HttpResponseRedirect(reverse('create_event', kwargs={'new_eid': eid}))
 
 @login_required
 def remove_permission(request, eid, username, permission):
+    event = get_object_or_404(Event, pk=eid)
+    if not check_permission(request.user, event, 0):
+        return no_permission(request)
     if username == request.user.username:
         return HttpResponseRedirect(reverse('create_event', kwargs={'new_eid': eid}))
     user = get_user(username)
-    event = get_object(Event, eid)
     if user is not None and event is not None:
         try:
             permission= Permission.objects.filter(user=user, event=event, permission=permission)[0]
@@ -186,7 +206,8 @@ def remove_permission(request, eid, username, permission):
 
 @login_required
 def choice_detail(request, template_name, cid, eid, permission):
-    if permission != 1 or permission != 0:
+    event = get_object_or_404(Event, pk=eid)
+    if not check_permission(request.user, event, 0):
         return no_permission(request)
     choice = get_object(Choice, cid)
     question = choice.question
@@ -200,8 +221,10 @@ def no_permission(request):
 def view_event_as_vendor(request, template_name, context):
     eid = context['eid']
     event = get_object_or_404(Event, pk=eid)
+    if not check_permission(request.user, event, 1):
+        return no_permission(request)
     questions = event.question.all()
-    effective_questions = questions.filter(visibility=True) 
+    effective_questions = questions.filter(visibility=True)
     question_list = get_q_list(effective_questions)
     event_data = dict([('event', event), ('questions', question_list)])
     context['event_data'] = event_data
@@ -223,16 +246,18 @@ def question_changeable(request, eid):
             elif question.changeable == True:
                 question.changeable = False
                 question.save()
-    return HttpResponseRedirect(reverse('homepage'))    
+    return HttpResponseRedirect(reverse('homepage'))
 
 def view_event_as_guest(request, template_name, context):
     eid = context['eid']
     event = get_object_or_404(Event, pk=eid)
+    if not check_permission(request.user, event, 2):
+        return no_permission(request)
     questions = event.question.all()
-    effective_questions = questions.filter(visibility=True).filter(changeable=True) 
+    effective_questions = questions.filter(visibility=True).filter(changeable=True)
     question_list = get_q_list(effective_questions)
     event_data = dict([('event', event), ('questions', question_list)])
-    context['event_data'] = event_data    
+    context['event_data'] = event_data
     checked_choice = dict([('event', event), ('choices', get_checked_list(request.user, effective_questions))])
     context['checked_choice'] = checked_choice
     return render(request, template_name, context)
@@ -284,7 +309,10 @@ def get_question_list(questions):
             choice_dict = model_to_dict(choice)
             choice_dict['number'] = choice.user.count()
             choice_list.append(choice_dict)
-        question_list.append(dict([('question', question.question), ('qid', question.qid), ('choice', choice_list)]))
+        question_list.append(dict([('question', question.question), \
+        ('qid', question.qid), \
+        ('visibility', question.visibility), \
+        ('choice', choice_list)]))
     return question_list
 
 def get_object(Model, value):
@@ -307,6 +335,25 @@ def get_pk_management(model_name):
     except PKManagement.DoesNotExist:
         pk_management = None
     return pk_management
+
+def notifyAll(requestUser, event):
+    members = event.members.all()
+    owners = members.filter(permission__permission = 0)
+    vendors = members.filter(permission__permission = 1)
+    guests = members.filter(permission__permission = 2)
+    notify(requestUser, guests, event)
+    notify(requestUser, owners, event)
+    notify(requestUser, vendors, event)
+
+def check_permission(user, event, permission):
+    try:
+        permission = Permission.objects.get(user=user, event=event, permission=permission)
+    except Permission.DoesNotExist:
+        permission = None
+    if permission is None:
+        return False
+    else:
+        return True
 
 def notify(from_user, target_users, event):
     title = 'The event you have involved has changed'
@@ -350,4 +397,3 @@ def save_permission(add_user, event, permission):
     if exist_permission.count() == 0:
         add_user_permission = Permission(user=add_user, event=event, permission=int(permission))
         add_user_permission.save()
-

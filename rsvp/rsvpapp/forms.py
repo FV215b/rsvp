@@ -30,7 +30,10 @@ class EventForm(ModelForm):
         model = Event
         fields = ['title', 'description', 'start_time', 'address', 'plus_one_allowed']
         widgets = {
-            'start_time': forms.DateTimeInput()
+            'title': forms.TextInput(attrs={'size': 100}),
+            'description': forms.Textarea(attrs={'cols' : "100", 'rows': "5", }),
+            'start_time': forms.DateTimeInput(),
+            'address': forms.TextInput(attrs={'size': 100}),
         }
 
 class QuestionForm(ModelForm):

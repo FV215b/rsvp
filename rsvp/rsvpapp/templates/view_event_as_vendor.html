@@ -3,28 +3,42 @@
 {% block title %}Guest Event{% endblock %}
 
 {% block header %}
-  <h1>{{event_data.event.title}}</h1>
-  <div>description: {{event_data.event.description}}</div>
-  <div>Address: {{event_data.event.address}}</div>
-  <div>Start time: {{event_data.event.start_time}}</div>
+<h1>View Event</h1>
 {% endblock %}
 
 {% block content %}
-    {% if user.is_authenticated %}
-        <form method="post" action="{% url 'question_changeable' eid=eid %}">
-            {% csrf_token %}
-            {% for question in event_data.questions %}
-                {% if question.question in changeable_question.questions %}
-                    <input type="checkbox", name="{{event_data.event.title}}#{{question.question}}", checked>{{question.question}}<br>
-                {% else %}
-                    <input type="checkbox", name="{{event_data.event.title}}#{{question.question}}">{{question.question}}<br>
-                {% endif %}
-                {% for choice in question.choice %}
-                    <div>{{choice.choice}}----{{choice.user.count}}</div><br>
-                {% endfor %}
-            {% endfor %}
-            <button type="submit">Save</button>
+{% if user.is_authenticated %}
+{% include 'event_info.html' %}
+<div class="panel panel-default">
+  <div class="panel-heading">Questions</div>
+  <div class="panel-body">
+    <div class="panel-group">
+      <form method="post" action="{% url 'question_changeable' eid=eid %}">
+        {% csrf_token %}
+        {% for question in event_data.questions %}
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            {{question.question}}
+            {% if question.question in changeable_question.questions %}
+            <input type="checkbox", name="{{event_data.event.title}}#{{question.question}}", checked>Changeable
+            {% else %}
+            <input type="checkbox", name="{{event_data.event.title}}#{{question.question}}">Changeable
+            {% endif %}
+          </div>
+          <div class="panel-body">
+            <div class="list-group">
+              {% for choice in question.choice %}
+              <a class="list-group-item">{{choice.choice}}<span class="badge">{{choice.user.count}}</span></a>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+        <button type="submit" class="btn btn-primary" >Save</button>
         </form>
-        <a href="{% url 'homepage' %}">Back</a>
+      </div>
+    </div>
+  </div>
+    {% include 'homepage_back.html' %}
     {% endif %}
 {% endblock %}

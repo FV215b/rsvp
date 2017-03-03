@@ -25,6 +25,9 @@
 
 {% block content %}
     {% if user.is_authenticated %}
+    <div class="panel panel-default">
+      <div class="panel-heading">Questions</div>
+      <div class="panel-body">
         <form method="post" action="{% url 'add_question' new_qid=new_qid new_eid=new_eid%}">
             {% csrf_token %}
             {{ question_form.as_p }}
@@ -36,10 +39,12 @@
                 </table>
               </div>
             {% endfor %}
-            <input type="button" value="Add More" id="add_more">
-            <button type="submit">Save</button>
+            <input type="button" value="Add a Choice" id="add_more" class="btn btn-primary" >
+            <button type="submit" class="btn btn-primary" >Save</button>
         </form>
-        <a href="{% url 'create_event' new_eid=new_eid%}">Back</a>
+      </div>
+    </div>
+    <a href="{% url 'create_event' new_eid=new_eid%}" class="btn btn-primary" role="button" >Back</a>
     {% endif %}
     <script language="javascript" type="text/javascript">
         $('#add_more').click(function() {
